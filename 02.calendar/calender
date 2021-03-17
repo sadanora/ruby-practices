@@ -17,7 +17,7 @@ puts "日 月 火 水 木 金 土"
 print ("   " * wday)
 
 (start_date.day..end_date.day).each do |date|
-  if date == Date.today.day && start_date.month == Date.today.month
+  if date == Date.today.day && start_date.month == Date.today.month && start_date.year == Date.today.year
     print "\e[30m\e[102m#{date.to_s.rjust(2)}\e[0m" + " "
   else
     print date.to_s.rjust(2) + " "
