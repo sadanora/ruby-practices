@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+require "optparse"
+require "date"
+
+params = ARGV.getopts("", "y:#{Date.today.year}", "m:#{Date.today.month}")
+
+year = params['y'].to_i
+month = params['m'].to_i
+
+start_date = Date.new(year, month, 1)
+wday = start_date.wday
+end_date = Date.new(year, month, -1)
+
+puts "#{start_date.month}月 #{start_date.year}".center(20)
+puts "日 月 火 水 木 金 土"
+print ("   " * wday)
+
+(start_date..end_date).each do |date|
+  if date.day == Date.today.day && start_date.month == Date.today.month && start_date.year == Date.today.year
+    print "\e[30m\e[102m#{date.day.to_s.rjust(2)}\e[0m" + " "
+  else
+    print date.day.to_s.rjust(2) + " "
+  end
+  if date.saturday?
+    print "\n"
+  end
+end
+
+# zshの最後の%が表示されないようにする
+print "\n"
+
