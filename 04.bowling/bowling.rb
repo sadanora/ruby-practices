@@ -20,22 +20,22 @@ shots.each do |shot|
     frame << shot
     frames << frame
     frame = []
-  elsif
+  else
     frame << shot
   end
 end
 
 point = 0
-frames.each_with_index do |frame, idx|
-          if frames[idx] == [10] && frames[idx + 1] == [10] && (idx < 9)
-            point += 20 + frames[idx + 2][0]
-          elsif frame == [10] && (idx < 9)
-            point += 10 + frames[idx + 1][0] + frames[idx + 1][1]
-          elsif frame.sum == 10 && (idx < 9)
-            point += frame.sum + frames[idx + 1][0]
-          else
-            point += frame.sum
-          end
+frames.each_with_index do |f, i|
+  point += if frames[i] == [10] && frames[i + 1] == [10] && (i < 9)
+             20 + frames[i + 2][0]
+           elsif f == [10] && (i < 9)
+             10 + frames[i + 1][0] + frames[i + 1][1]
+           elsif f.sum == 10 && (i < 9)
+             f.sum + frames[i + 1][0]
+           else
+             f.sum
+           end
 end
 
 puts point
