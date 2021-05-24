@@ -8,37 +8,34 @@ shots = []
 scores.each { |s| shots << (s == 'X' ? 10 : s.to_i) }
 
 frames = []
-n = 0
-shots.each do
-  if shots[n] == 10
-    frames.push([10, 0])
-    n += 1
-  elsif  n < shots.length
-    frames.push([shots[n], shots[n + 1]])
-    n += 2
+frame = []
+shots.each do |shot|
+  if frames.length > 9 # 10フレーム用の処理。10フレームを迎えていたら最後のframeにshotを追加する。
+    frames.last << shot
+  elsif shot == 10 # ストライク
+    frame << 10
+    frames << frame # framesにframeを追加する
+    frame = [] # 次のフレームのために配列を空にする
+  elsif frame.count == 1 # 2投目用の処理。frameの中身が1つだったら2投目を追加。
+    frame << shot
+    frames << frame
+    frame = []
+  elsif
+    frame << shot
   end
-end
-
-# 最終フレームにnilがあれば0番目の値を前のフレームに連結する
-if frames.last[1].nil?
-  frames[9].concat(frames[10])
-  frames.delete_at(10)
-  frames[9].delete_at(-1)
 end
 
 point = 0
 frames.each_with_index do |frame, idx|
-  point += if frame == [10, 0] && frames[idx + 1] == [10, 0] && frames[idx + 2] == [10, 0] && (idx < 8)
-             30
-           elsif frame == [10, 0] && frames[idx + 1] == [10, 0] && (idx < 9)
-             20 + frames[idx + 2][0]
-           elsif frame == [10, 0] && (idx < 9)
-             10 + frames[idx + 1][0] + frames[idx + 1][1]
-           elsif frame.sum == 10 && (idx < 9)
-             frame.sum + frames[idx + 1][0]
-           else
-             frame.sum
-           end
+          if frames[idx] == [10] && frames[idx + 1] == [10] && (idx < 9)
+            point += 20 + frames[idx + 2][0]
+          elsif frame == [10] && (idx < 9)
+            point += 10 + frames[idx + 1][0] + frames[idx + 1][1]
+          elsif frame.sum == 10 && (idx < 9)
+            point += frame.sum + frames[idx + 1][0]
+          else
+            point += frame.sum
+          end
 end
 
 puts point
