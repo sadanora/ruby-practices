@@ -5,17 +5,23 @@ require 'etc'
 require 'date'
 
 def print_three_column(file_names)
-  slice_number = ((file_names.length % 3).zero? ? (file_names.length / 3) : (file_names.length / 3 + 1))
-  file_names = file_names.each_slice(slice_number).to_a
-  file_name_deficiency = (file_names[-2].length - file_names[-1].length)
-  file_name_deficiency.times { file_names[-1].push('') } if file_names[-1].length != file_names[-2].length
-  string_size = file_names.flatten.max_by(&:length).length + 7
-
-  file_names.transpose.each do |file_name|
-    print file_name[0] + ' ' * (string_size - file_name[0].length)
-    print file_name[1] + ' ' * (string_size - file_name[1].length)
-    print file_name[2]
+  if file_names.length < 3
+    file_names.each do |file_name|
+      print "#{file_name}   "
+    end
     print "\n"
+  else
+    slice_number = ((file_names.length % 3).zero? ? (file_names.length / 3) : (file_names.length / 3 + 1))
+    file_names = file_names.each_slice(slice_number).to_a
+    file_name_deficiency = (file_names[-2].length - file_names[-1].length)
+    file_name_deficiency.times { file_names[-1].push('') } if file_names[-1].length != file_names[-2].length
+    string_size = file_names.flatten.max_by(&:length).length + 7
+    file_names.transpose.each do |file_name|
+      print file_name[0] + ' ' * (string_size - file_name[0].length)
+      print file_name[1] + ' ' * (string_size - file_name[1].length)
+      print file_name[2]
+      print "\n"
+    end
   end
 end
 
