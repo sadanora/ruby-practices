@@ -89,7 +89,7 @@ def build_file_info_list(file_names)
     file_type = FILE_TYPE[lstat.ftype]
     permission = FILE_PERMISSION[mode[-3]] + FILE_PERMISSION[mode[-2]] + FILE_PERMISSION[mode[-1]]
     mtime = lstat.mtime
-    time = lstat.mtime < SIX_MONTHS_AGO ? mtime.strftime('%Y') : mtime.strftime('%H:%M')
+    time = mtime < SIX_MONTHS_AGO ? mtime.strftime('%Y') : mtime.strftime('%H:%M')
     {
       file_type: file_type,
       permission: permission,
