@@ -5,6 +5,29 @@ require 'optparse'
 require 'etc'
 require 'date'
 
+COLUMN_COUNT = 3
+BLANK_COUNT = 7
+FILE_TYPE = {
+  'fifo' => 'p',
+  'characterSpecial' => 'c',
+  'directory' => 'd',
+  'blockSpecial' => 'b',
+  'file' => '-',
+  'link' => 'l',
+  'socket' => 's'
+}.freeze
+
+FILE_PERMISSION = {
+  '0' => '---',
+  '1' => '--x',
+  '2' => '-w-',
+  '3' => '-wx',
+  '4' => 'r--',
+  '5' => 'r-x',
+  '6' => 'rw-',
+  '7' => 'rwx'
+}.freeze
+
 def main
   options = ARGV.getopts('a', 'l', 'r')
 
@@ -23,38 +46,14 @@ def main
   end
 end
 
-COLUMN_COUNT = 3
-BLANK_COUNT = 7
-FILE_TYPE = {
-  'fifo' => 'p',
-  'characterSpecial' => 'c',
-  'directory' => 'd',
-  'blockSpecial' => 'b',
-  'file' => '-',
-  'link' => 'l',
-  'socket' => 's'
-}.freeze
-FILE_PERMISSION = {
-  '0' => '---',
-  '1' => '--x',
-  '2' => '-w-',
-  '3' => '-wx',
-  '4' => 'r--',
-  '5' => 'r-x',
-  '6' => 'rw-',
-  '7' => 'rwx'
-}.freeze
-SIX_MONTHS_AGO = Time.now - (60 * 60 * 24 * 181)
-
 def print_column_format(file_names)
-  file_name_length = file_names.flatten.max_by(&:length).length + BLANK_COUNT
+  file_name_length = file_names.max_by(&:length).length + BLANK_COUNT
   slice_number = (file_names.length / COLUMN_COUNT.to_f).ceil
   nested_file_names = file_names.each_slice(slice_number).to_a
   if file_names.length > COLUMN_COUNT
-    file_name_deficiency = nested_file_names[-2].length - nested_file_names[-1].length
-    file_name_deficiency.times { nested_file_names[-1].push('') }
+    file_count_diff = nested_file_names[-2].length - nested_file_names[-1].length
+    nested_file_names[-1] += Array.new(file_count_diff, '')
   end
-
   nested_file_names.transpose.each do |nested_file_name|
     nested_file_name.each do |file_name|
       print file_name.ljust(file_name_length)
@@ -88,8 +87,8 @@ def build_file_info_list(file_names)
     mode = lstat.mode.to_s(8).rjust(6, '0')
     file_type = FILE_TYPE[lstat.ftype]
     permission = FILE_PERMISSION[mode[-3]] + FILE_PERMISSION[mode[-2]] + FILE_PERMISSION[mode[-1]]
-    mtime = lstat.mtime
-    time = mtime < SIX_MONTHS_AGO ? mtime.strftime('%Y') : mtime.strftime('%H:%M')
+    date_format_switching_time = Time.now - (60 * 60 * 24 * 181)
+    time = lstat.mtime < date_format_switching_time ? lstat.mtime.strftime('%Y') : lstat.mtime.strftime('%H:%M')
     {
       file_type: file_type,
       permission: permission,
