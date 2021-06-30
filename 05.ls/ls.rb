@@ -82,12 +82,12 @@ def print_long_format(file_names)
 end
 
 def build_file_info_list(file_names)
+  date_format_switching_time = Time.now - (60 * 60 * 24 * 181)
   file_names.map do |file_name|
     lstat = File.lstat("#{Dir.pwd}/#{file_name}")
     mode = lstat.mode.to_s(8).rjust(6, '0')
     file_type = FILE_TYPE[lstat.ftype]
     permission = FILE_PERMISSION[mode[-3]] + FILE_PERMISSION[mode[-2]] + FILE_PERMISSION[mode[-1]]
-    date_format_switching_time = Time.now - (60 * 60 * 24 * 181)
     time = lstat.mtime < date_format_switching_time ? lstat.mtime.strftime('%Y') : lstat.mtime.strftime('%H:%M')
     {
       file_type: file_type,
