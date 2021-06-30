@@ -3,7 +3,6 @@
 
 require 'optparse'
 require 'etc'
-require 'date'
 
 COLUMN_COUNT = 3
 BLANK_COUNT = 7
